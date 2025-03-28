@@ -74,7 +74,39 @@
             </div>
         </div>
     </div>
-
+    <script>
+        const form = document.getElementById('contactForm');
+         const submitBtn = document.getElementById('submitBtn');
+ 
+         paypal.Buttons({
+             createOrder: function(data, actions) {
+                 return actions.order.create({
+                     purchase_units: [{
+                         amount: {
+                             value: '200.00' // Set the RSVP fee amount here
+                         }
+                     }]
+                 });
+             },
+             onApprove: function(data, actions) {
+                 return actions.order.capture().then(function(details) {
+                     alert('Payment completed by ' + details.payer.name.given_name);
+                     submitBtn.disabled = false; // Enable form submission after payment
+                 });
+             },
+             onError: function(err) {
+                 console.error('PayPal error:', err);
+                 alert('Payment could not be processed. Please try again.');
+             }
+         }).render('#paypal-button-container');
+ 
+         form.addEventListener('submit', function(event) {
+             if (submitBtn.disabled) {
+                 event.preventDefault();   
+                 alert('Please complete the payment to submit your RSVP.');
+             }
+         });
+     </script>
 
 
 </body>
